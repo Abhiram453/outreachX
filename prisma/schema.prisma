@@ -1,0 +1,95 @@
+// Prisma schema for OutreachX
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// User model for authentication
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?   // Hashed password
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  profile       UserProfile?
+  messages      GeneratedMessage[]
+  savedTargets  SavedTarget[]
+}
+
+// User profile with student details
+model UserProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  university  String?
+  major       String?
+  year        String?
+  skills      String?
+  experience  String?
+  interests   String?
+  linkedinUrl String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Saved target professionals for reuse
+model SavedTarget {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String
+  title       String?
+  company     String?
+  industry    String?
+  background  String?
+  linkedinUrl String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Messages sent to this target
+  messages    GeneratedMessage[]
+}
+
+// Generated messages history
+model GeneratedMessage {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Target info (can be linked or standalone)
+  targetId        String?
+  target          SavedTarget? @relation(fields: [targetId], references: [id], onDelete: SetNull)
+  targetName      String
+  targetTitle     String?
+  targetCompany   String?
+  
+  // Message details
+  intent          String   // mentorship, internship, informational, referral, networking, advice
+  tone            String   // professional, friendly, enthusiastic, humble
+  length          String   // brief, standard, detailed
+  
+  // Generated content
+  message         String
+  generationType  String   // ai or template
+  
+  // User feedback
+  rating          Int?     // 1-5 rating
+  copied          Boolean  @default(false)
+  sent            Boolean  @default(false)
+  gotResponse     Boolean?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
