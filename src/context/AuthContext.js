@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch("/api/auth/me");
+      const response = await fetch("/api/auth/me", { credentials: "include" });
       const data = await response.json();
       
       if (data.authenticated) {
@@ -40,6 +40,7 @@ export function AuthProvider({ children }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
     // Check if response is JSON
@@ -63,6 +64,7 @@ export function AuthProvider({ children }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
+      credentials: "include",
     });
 
     // Check if response is JSON
@@ -98,6 +100,7 @@ export function AuthProvider({ children }) {
           image: firebaseUser.photoURL,
           provider: "google",
         }),
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -119,7 +122,7 @@ export function AuthProvider({ children }) {
       // Sign out from Firebase
       await firebaseSignOut(auth);
       // Sign out from our backend
-      await fetch("/api/auth/logout", { method: "POST" });
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
       setUser(null);
       router.push("/login");
     } catch (error) {

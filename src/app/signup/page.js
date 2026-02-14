@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import SignupIllustration from "@/components/SignupIllustration";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "@/context/ThemeContext";
 
 // Animated background orbs
 function BackgroundOrbs() {
@@ -78,6 +79,7 @@ function FloatingIcons() {
 }
 
 export default function SignupPage() {
+  const { theme } = useTheme();
   const { signup, signInWithGoogle, user, loading } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -184,7 +186,11 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen relative transition-colors duration-300 bg-gradient-to-br from-sky-50 via-white to-blue-50 text-gray-800">
+    <div className={`min-h-screen relative transition-colors duration-300 ${
+      theme === "dark"
+        ? "bg-gradient-to-br from-[#0a0a0f] via-[#0f0f1a] to-[#0a0a0f] text-white"
+        : "bg-gradient-to-br from-sky-50 via-white to-blue-50 text-gray-800"
+    }`}>
       <BackgroundOrbs />
       <FloatingIcons />
       
@@ -195,23 +201,34 @@ export default function SignupPage() {
       <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-white/80 backdrop-blur-xl border-b border-blue-100 shadow-sm"
+        className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 backdrop-blur-xl border-b shadow-sm ${
+          theme === "dark"
+            ? "bg-gray-900/80 border-white/10"
+            : "bg-white/80 border-blue-100"
+        }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <motion.div
               whileHover={{ rotate: 10 }}
-              className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-sky-400"
+              className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                theme === "dark"
+                  ? "bg-gradient-to-br from-indigo-500 to-purple-600"
+                  : "bg-gradient-to-br from-blue-500 to-sky-400"
+              }`}
             >
               <span className="text-xl">✉️</span>
             </motion.div>
-            <span className="text-xl font-bold text-gray-800">
-              Outreach<span className="text-blue-500">X</span>
+            <span className={`text-xl font-bold ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+              Outreach<span className={theme === "dark" ? "text-indigo-400" : "text-blue-500"}>X</span>
             </span>
           </Link>
           
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-gray-600 hover:text-blue-600 transition-colors hidden sm:block">
+            <ThemeToggle />
+            <Link href="/login" className={`transition-colors hidden sm:block ${
+              theme === "dark" ? "text-gray-300 hover:text-indigo-400" : "text-gray-600 hover:text-blue-600"
+            }`}>
               Sign In
             </Link>
           </div>
@@ -230,18 +247,26 @@ export default function SignupPage() {
               className="w-full max-w-md mx-auto lg:mx-0"
             >
               {/* Signup Card */}
-              <div className="rounded-3xl p-8 backdrop-blur-xl border transition-colors duration-300 bg-white/80 border-blue-100 shadow-xl shadow-blue-500/10">
+              <div className={`rounded-3xl p-8 backdrop-blur-xl border transition-colors duration-300 shadow-xl ${
+                theme === "dark"
+                  ? "bg-white/5 border-white/10 shadow-indigo-500/5"
+                  : "bg-white/80 border-blue-100 shadow-blue-500/10"
+              }`}>
                 <div className="text-center mb-8">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", delay: 0.2 }}
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-gradient-to-br from-blue-500 to-sky-400"
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
+                      theme === "dark"
+                        ? "bg-gradient-to-br from-indigo-500 to-purple-600"
+                        : "bg-gradient-to-br from-blue-500 to-sky-400"
+                    }`}
                   >
                     <span className="text-3xl">🚀</span>
                   </motion.div>
-                  <h1 className="text-3xl font-bold mb-2 text-gray-800">Create Account</h1>
-                  <p className="text-gray-500">Start your networking journey today</p>
+                  <h1 className={`text-3xl font-bold mb-2 ${theme === "dark" ? "text-white" : "text-gray-800"}`}>Create Account</h1>
+                  <p className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>Start your networking journey today</p>
                 </div>
 
                 {/* Progress indicator */}
@@ -251,15 +276,21 @@ export default function SignupPage() {
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
                           step >= s
-                            ? "bg-gradient-to-r from-blue-500 to-sky-400 text-white"
-                            : "bg-blue-50 text-gray-400 border border-blue-100"
+                            ? theme === "dark"
+                              ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
+                              : "bg-gradient-to-r from-blue-500 to-sky-400 text-white"
+                            : theme === "dark"
+                              ? "bg-white/5 text-gray-500 border border-white/10"
+                              : "bg-blue-50 text-gray-400 border border-blue-100"
                         }`}
                       >
                         {step > s ? "✓" : s}
                       </div>
                       {s < 2 && (
                         <div className={`flex-1 h-0.5 ${
-                          step > s ? "bg-blue-500" : "bg-blue-100"
+                          step > s 
+                            ? theme === "dark" ? "bg-indigo-500" : "bg-blue-500" 
+                            : theme === "dark" ? "bg-white/10" : "bg-blue-100"
                         }`}></div>
                       )}
                     </div>
@@ -284,28 +315,36 @@ export default function SignupPage() {
                       className="space-y-5"
                     >
                       <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-600">
+                        <label className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
                           Full Name <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border transition-all bg-white/50 border-blue-100 text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                          className={`w-full px-4 py-3 rounded-xl border transition-all focus:outline-none ${
+                            theme === "dark"
+                              ? "bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                              : "bg-white/50 border-blue-100 text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                          }`}
                           placeholder="John Doe"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-600">
+                        <label className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
                           Email Address <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="email"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border transition-all bg-white/50 border-blue-100 text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                          className={`w-full px-4 py-3 rounded-xl border transition-all focus:outline-none ${
+                            theme === "dark"
+                              ? "bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                              : "bg-white/50 border-blue-100 text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                          }`}
                           placeholder="you@example.com"
                           required
                         />
@@ -316,7 +355,11 @@ export default function SignupPage() {
                         onClick={handleContinue}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="w-full py-3.5 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 text-white bg-gradient-to-r from-blue-500 to-sky-400 hover:from-blue-600 hover:to-sky-500 shadow-lg shadow-blue-500/25"
+                        className={`w-full py-3.5 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 text-white shadow-lg ${
+                          theme === "dark"
+                            ? "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-indigo-500/25"
+                            : "bg-gradient-to-r from-blue-500 to-sky-400 hover:from-blue-600 hover:to-sky-500 shadow-blue-500/25"
+                        }`}
                       >
                         Continue
                         <span>→</span>
@@ -331,31 +374,39 @@ export default function SignupPage() {
                       className="space-y-5"
                     >
                       <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-600">
+                        <label className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
                           Password <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="password"
                           value={formData.password}
                           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border transition-all bg-white/50 border-blue-100 text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                          className={`w-full px-4 py-3 rounded-xl border transition-all focus:outline-none ${
+                            theme === "dark"
+                              ? "bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                              : "bg-white/50 border-blue-100 text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                          }`}
                           placeholder="••••••••"
                           required
                         />
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className={`text-xs mt-2 ${theme === "dark" ? "text-gray-500" : "text-gray-500"}`}>
                           Min 8 chars, 1 uppercase, 1 number, 1 special character
                         </p>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-600">
+                        <label className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
                           Confirm Password <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="password"
                           value={formData.confirmPassword}
                           onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border transition-all bg-white/50 border-blue-100 text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                          className={`w-full px-4 py-3 rounded-xl border transition-all focus:outline-none ${
+                            theme === "dark"
+                              ? "bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                              : "bg-white/50 border-blue-100 text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                          }`}
                           placeholder="••••••••"
                           required
                         />
@@ -367,7 +418,11 @@ export default function SignupPage() {
                           onClick={() => setStep(1)}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          className="flex-1 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
+                          className={`flex-1 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 border ${
+                            theme === "dark"
+                              ? "bg-white/5 hover:bg-white/10 text-gray-300 border-white/10"
+                              : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200"
+                          }`}
                         >
                           <span>←</span>
                           Back
@@ -377,7 +432,11 @@ export default function SignupPage() {
                           disabled={isLoading}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          className="flex-1 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50 text-white bg-gradient-to-r from-blue-500 to-sky-400 hover:from-blue-600 hover:to-sky-500 shadow-lg shadow-blue-500/25"
+                          className={`flex-1 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50 text-white shadow-lg ${
+                            theme === "dark"
+                              ? "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-indigo-500/25"
+                              : "bg-gradient-to-r from-blue-500 to-sky-400 hover:from-blue-600 hover:to-sky-500 shadow-blue-500/25"
+                          }`}
                         >
                           {isLoading ? (
                             <>
@@ -395,9 +454,9 @@ export default function SignupPage() {
 
                 {/* Divider */}
                 <div className="flex items-center gap-4 my-6">
-                  <div className="flex-1 h-px bg-gray-200"></div>
-                  <span className="text-sm text-gray-400">or</span>
-                  <div className="flex-1 h-px bg-gray-200"></div>
+                  <div className={`flex-1 h-px ${theme === "dark" ? "bg-white/10" : "bg-gray-200"}`}></div>
+                  <span className={`text-sm ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}>or</span>
+                  <div className={`flex-1 h-px ${theme === "dark" ? "bg-white/10" : "bg-gray-200"}`}></div>
                 </div>
 
                 {/* Google Sign-in Button */}
@@ -407,7 +466,11 @@ export default function SignupPage() {
                   disabled={socialLoading === "google"}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full py-3 rounded-xl font-medium flex items-center justify-center gap-3 transition-colors bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm ${socialLoading === "google" ? "opacity-70 cursor-not-allowed" : ""}`}
+                  className={`w-full py-3 rounded-xl font-medium flex items-center justify-center gap-3 transition-colors shadow-sm ${
+                    theme === "dark"
+                      ? "bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
+                      : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200"
+                  } ${socialLoading === "google" ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {socialLoading === "google" ? (
                     <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
@@ -423,18 +486,18 @@ export default function SignupPage() {
                 </motion.button>
 
                 {/* Terms */}
-                <p className="text-xs text-center mt-6 text-gray-500">
+                <p className={`text-xs text-center mt-6 ${theme === "dark" ? "text-gray-500" : "text-gray-500"}`}>
                   By creating an account, you agree to our{" "}
-                  <Link href="/terms" className="hover:underline text-blue-500">Terms of Service</Link>
+                  <Link href="/terms" className={`hover:underline ${theme === "dark" ? "text-indigo-400" : "text-blue-500"}`}>Terms of Service</Link>
                   {" "}and{" "}
-                  <Link href="/privacy" className="hover:underline text-blue-500">Privacy Policy</Link>
+                  <Link href="/privacy" className={`hover:underline ${theme === "dark" ? "text-indigo-400" : "text-blue-500"}`}>Privacy Policy</Link>
                 </p>
               </div>
 
               {/* Login link */}
-              <p className="text-center mt-6 text-gray-500">
+              <p className={`text-center mt-6 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
                 Already have an account?{" "}
-                <Link href="/login" className="font-medium text-blue-500 hover:text-blue-600">
+                <Link href="/login" className={`font-medium ${theme === "dark" ? "text-indigo-400 hover:text-indigo-300" : "text-blue-500 hover:text-blue-600"}`}>
                   Sign in
                 </Link>
               </p>
@@ -448,10 +511,14 @@ export default function SignupPage() {
               className="hidden lg:block"
             >
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
+                <h2 className={`text-3xl font-bold mb-4 bg-gradient-to-r bg-clip-text text-transparent ${
+                  theme === "dark"
+                    ? "from-indigo-400 to-purple-500"
+                    : "from-sky-500 to-blue-600"
+                }`}>
                   Join Our Community
                 </h2>
-                <p className="text-gray-600 text-lg">
+                <p className={`text-lg ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
                   Connect with professionals and amplify your networking success.
                 </p>
               </div>
@@ -470,10 +537,14 @@ export default function SignupPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 + i * 0.1 }}
-                    className="flex items-center gap-3 p-3 rounded-xl bg-white/60 backdrop-blur-sm border border-blue-100"
+                    className={`flex items-center gap-3 p-3 rounded-xl backdrop-blur-sm border ${
+                      theme === "dark"
+                        ? "bg-white/5 border-white/10"
+                        : "bg-white/60 border-blue-100"
+                    }`}
                   >
                     <span className="text-2xl">{item.icon}</span>
-                    <span className="text-sm font-medium text-gray-700">{item.text}</span>
+                    <span className={`text-sm font-medium ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>{item.text}</span>
                   </motion.div>
                 ))}
               </div>
