@@ -124,6 +124,7 @@ export default function Dashboard() {
   const [formData, setFormData] = useState(initialFormData);
   const [generatedMessage, setGeneratedMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [customRefinement, setCustomRefinement] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
   const [copied, setCopied] = useState(false);
   const [warnings, setWarnings] = useState([]);
@@ -1436,6 +1437,50 @@ export default function Dashboard() {
                           {option}
                         </motion.button>
                       ))}
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <input
+                        type="text"
+                        placeholder="Type your own refinement..."
+                        value={customRefinement}
+                        onChange={(e) => setCustomRefinement(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && customRefinement.trim()) {
+                            refineMessage(customRefinement.trim());
+                            setCustomRefinement("");
+                          }
+                        }}
+                        disabled={isLoading}
+                        className={`flex-1 px-3 py-1.5 rounded-lg text-sm transition-all outline-none ${
+                          isLoading ? "opacity-50 cursor-not-allowed" : ""
+                        } ${
+                          theme === "dark"
+                            ? "bg-white/5 border border-white/10 text-gray-200 placeholder-gray-500 focus:border-indigo-500"
+                            : "bg-white/80 border border-blue-100 text-gray-700 placeholder-gray-400 focus:border-blue-400"
+                        }`}
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          if (customRefinement.trim()) {
+                            refineMessage(customRefinement.trim());
+                            setCustomRefinement("");
+                          }
+                        }}
+                        disabled={isLoading || !customRefinement.trim()}
+                        className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                          isLoading || !customRefinement.trim()
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        } ${
+                          theme === "dark"
+                            ? "bg-indigo-600 text-white hover:bg-indigo-500"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
+                        }`}
+                      >
+                        Refine
+                      </motion.button>
                     </div>
                   </div>
                 </motion.div>
