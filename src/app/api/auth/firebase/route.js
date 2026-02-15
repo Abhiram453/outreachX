@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function POST(request) {
   try {
@@ -78,7 +76,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("Firebase auth error:", error);
     return NextResponse.json(
-      { error: "Authentication failed" },
+      { error: "Authentication failed", details: error.message },
       { status: 500 }
     );
   }
